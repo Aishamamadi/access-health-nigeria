@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Access Health Nigeria — Healthcare Navigation Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#1D9E75;--green-dark:#0F6E56;--green-light:#E1F5EE;--green-mid:#5DCAA5;
+  --amber:#BA7517;--amber-light:#FAEEDA;
+  --red:#A32D2D;--red-light:#FCEBEB;
+  --text:#1a1a1a;--text-secondary:#555;--text-tertiary:#888;
+  --border:#e0e0e0;--bg:#f7f7f5;--white:#fff;
+  --radius:12px;--radius-sm:8px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* header */
+.site-header{background:var(--white);border-bottom:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo-row{display:flex;align-items:center;gap:10px}
+.logo-mark{width:36px;height:36px;background:var(--green);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-mark svg{width:20px;height:20px}
+.logo-text{font-size:16px;font-weight:600;color:var(--text)}
+.logo-sub{font-size:11px;color:var(--text-secondary);margin-top:1px}
+.prototype-badge{font-size:11px;font-weight:500;padding:4px 10px;border-radius:20px;background:var(--amber-light);color:var(--amber);border:1px solid #EF9F27}
+
+/* hero */
+.hero{padding:48px 24px 32px;max-width:720px;margin:0 auto;text-align:center}
+.hero h1{font-size:28px;font-weight:600;line-height:1.3;margin-bottom:12px;color:var(--text)}
+.hero p{font-size:15px;color:var(--text-secondary);line-height:1.7;max-width:560px;margin:0 auto 24px}
+.hero-stats{display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-top:24px}
+.hero-stat{text-align:center}
+.hero-stat-val{font-size:22px;font-weight:600;color:var(--green)}
+.hero-stat-lab{font-size:12px;color:var(--text-secondary);margin-top:2px;max-width:100px;line-height:1.3}
+
+/* lang toggle */
+.lang-row{display:flex;justify-content:center;gap:8px;margin-bottom:24px}
+.lang-btn{padding:8px 20px;border-radius:20px;font-size:13px;font-weight:500;border:1.5px solid var(--border);background:var(--white);cursor:pointer;color:var(--text-secondary);font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.lang-btn.active{background:var(--green);color:#fff;border-color:var(--green)}
+
+/* tab row */
+.tab-row{display:flex;justify-content:center;gap:8px;margin-bottom:28px}
+.tab{padding:9px 20px;border-radius:20px;font-size:13px;font-weight:500;border:1.5px solid var(--border);background:var(--white);cursor:pointer;color:var(--text-secondary);font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.tab.active{background:var(--text);color:#fff;border-color:var(--text)}
+
+/* main layout */
+.main{max-width:720px;margin:0 auto;padding:0 16px 48px}
+.panel{display:none}.panel.active{display:block}
+
+/* phone mockup */
+.phone-wrap{display:flex;justify-content:center;margin-bottom:24px}
+.phone{width:300px;border-radius:32px;overflow:hidden;border:6px solid #1a1a1a;background:var(--white);box-shadow:0 20px 60px rgba(0,0,0,0.15)}
+
+/* whatsapp */
+.wa-bar{background:#075E54;padding:10px 14px;display:flex;align-items:center;gap:10px}
+.wa-back{color:rgba(255,255,255,0.7);font-size:18px;cursor:pointer;line-height:1}
+.wa-avatar{width:34px;height:34px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.wa-info{flex:1}
+.wa-name{font-size:13px;font-weight:600;color:#fff}
+.wa-status{font-size:10px;color:#b2dfdb}
+.wa-bg{background:#ECE5DD;padding:10px;min-height:380px;max-height:420px;overflow-y:auto;display:flex;flex-direction:column;gap:7px;scroll-behavior:smooth}
+.wa-bg::-webkit-scrollbar{width:3px}
+.wa-bg::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.2);border-radius:2px}
+.wb{max-width:82%;padding:7px 10px 20px;border-radius:10px;font-size:12px;line-height:1.5;position:relative;word-break:break-word}
+.wb.in{background:#fff;align-self:flex-start;border-bottom-left-radius:2px;color:#111;box-shadow:0 1px 2px rgba(0,0,0,0.1)}
+.wb.out{background:#DCF8C6;align-self:flex-end;border-bottom-right-radius:2px;color:#111;box-shadow:0 1px 2px rgba(0,0,0,0.1)}
+.wb.sys{background:rgba(0,0,0,0.06);align-self:center;font-size:10px;color:#666;padding:3px 10px 3px;border-radius:8px;box-shadow:none}
+.wb-time{font-size:9px;color:#999;position:absolute;bottom:4px;right:8px}
+.wb-ticks{color:#53bdeb;font-size:9px}
+.trust-msg{background:#e8f5e9;border-left:3px solid var(--green);padding:6px 8px;border-radius:0 6px 6px 0;font-size:11px;color:var(--green-dark);line-height:1.5;margin-top:4px}
+.warn-msg{background:#fff8e1;border-left:3px solid #f9a825;padding:6px 8px;border-radius:0 6px 6px 0;font-size:11px;color:#795548;line-height:1.5;margin-top:4px}
+.emergency-msg{background:#ffebee;border-left:3px solid #e53935;padding:6px 8px;border-radius:0 6px 6px 0;font-size:11px;color:#b71c1c;line-height:1.5;font-weight:500;margin-top:4px}
+.wa-opts-wrap{background:#fff;border-top:1px solid #eee;padding:8px}
+.wa-opt{width:100%;background:#fff;border:1px solid #25D366;border-radius:8px;padding:8px 10px;font-size:11.5px;color:#075E54;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:left;margin-bottom:5px;display:flex;align-items:center;gap:7px;transition:background 0.1s;font-weight:500}
+.wa-opt:last-child{margin-bottom:0}
+.wa-opt:hover{background:#e8f5e9}
+.wa-opt-n{width:18px;height:18px;border-radius:50%;background:#075E54;color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:600}
+.wa-opt-sub{font-size:10px;color:#888;font-weight:400;margin-top:1px}
+.wa-bar-bottom{background:#f0f0f0;padding:8px 12px;display:flex;align-items:center;gap:8px}
+.wa-input-fake{flex:1;background:#fff;border-radius:20px;padding:7px 12px;font-size:11px;color:#aaa;border:none}
+
+/* USSD */
+.ussd-phone{width:280px;border-radius:24px;overflow:hidden;border:6px solid #2a2a2a;background:#111}
+.ussd-notch{background:#222;padding:6px;text-align:center}
+.ussd-dot{width:8px;height:8px;border-radius:50%;background:#333;display:inline-block}
+.ussd-topbar{background:#1a1a1a;padding:6px 12px;display:flex;justify-content:space-between;align-items:center}
+.ussd-carrier{font-size:10px;color:#888;font-family:'DM Mono',monospace}
+.ussd-signal{font-size:10px;color:#888}
+.ussd-screen{background:#000;padding:14px;min-height:260px;font-family:'DM Mono',monospace;color:#00e676;font-size:11px;line-height:1.8;white-space:pre-wrap;word-break:break-word}
+.ussd-input-bar{background:#111;padding:6px 10px;display:flex;gap:6px;align-items:center;border-top:1px solid #222}
+.ussd-typed{flex:1;background:#000;border:1px solid #333;border-radius:4px;padding:4px 8px;font-family:'DM Mono',monospace;font-size:11px;color:#00e676;min-height:26px}
+.ussd-keypad{background:#1a1a1a;padding:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.key{background:#2a2a2a;border-radius:8px;padding:10px 4px;text-align:center;font-size:13px;color:#fff;cursor:pointer;font-family:'DM Mono',monospace;border:none;transition:background 0.1s;font-weight:500}
+.key:hover{background:#3a3a3a}
+.key.send{background:var(--green);color:#fff}
+.key.send:hover{background:var(--green-dark)}
+.key.clr{background:#993C1D;color:#fff}
+.key.clr:hover{background:#7a2e14}
+
+/* context cards */
+.context-section{margin-top:28px}
+.context-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:500px){.context-grid{grid-template-columns:1fr}}
+.ctx-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.ctx-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px}
+.ctx-body{font-size:12px;color:var(--text-secondary);line-height:1.6}
+.tag{display:inline-block;font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;margin:2px 2px 0 0}
+.tag-g{background:var(--green-light);color:var(--green-dark)}
+.tag-a{background:var(--amber-light);color:var(--amber)}
+.tag-b{background:#E6F1FB;color:#0C447C}
+.stat-strip{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.stat-chip{background:#f5f5f3;border-radius:8px;padding:8px 10px;flex:1;min-width:70px}
+.stat-v{font-size:17px;font-weight:600;color:var(--text)}
+.stat-l{font-size:10px;color:var(--text-secondary);margin-top:2px;line-height:1.3}
+
+/* footer */
+.footer{background:var(--white);border-top:1px solid var(--border);padding:20px 24px;text-align:center}
+.footer-text{font-size:11px;color:var(--text-tertiary);line-height:1.6}
+.footer-name{font-weight:600;color:var(--text-secondary)}
+
+.cursor-blink{animation:blink 1s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+@media(max-width:600px){
+  .hero h1{font-size:22px}
+  .hero-stats{gap:20px}
+  .phone{width:270px}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="logo-row">
+    <div class="logo-mark"><svg viewBox="0 0 20 20" fill="none"><path d="M10 3v14M3 10h14" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+    <div>
+      <div class="logo-text">Access Health Nigeria</div>
+      <div class="logo-sub">Healthcare navigation · Northern Nigeria</div>
+    </div>
+  </div>
+  <div class="prototype-badge">Design prototype · April 2026</div>
+</header>
+
+<div class="hero">
+  <h1>Finding the right care shouldn't be a guessing game</h1>
+  <p>In northern Nigeria, millions of people bypass PHCs — not because they don't care about their health, but because they don't understand or trust the system. Access Health Nigeria addresses navigation and trust, in Hausa, where people already are.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-val">54%</div><div class="hero-stat-lab">of Nigerians offline — needs non-internet delivery</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">0</div><div class="hero-stat-lab">existing tools address PHC trust in Hausa-first contexts</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">3.6M</div><div class="hero-stat-lab">people reached by WhatsApp health tools in Nigeria</div></div>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="tab-row">
+    <button class="tab active" onclick="switchTab('wa',this)">WhatsApp flow</button>
+    <button class="tab" onclick="switchTab('ussd',this)">USSD flow</button>
+  </div>
+
+  <div class="panel active" id="panel-wa">
+    <div class="lang-row">
+      <span style="font-size:12px;color:var(--text-secondary);margin-right:4px">Language:</span>
+      <button class="lang-btn active" onclick="setLang('en',this)">English</button>
+      <button class="lang-btn" onclick="setLang('ha',this)">Hausa</button>
+    </div>
+    <div class="phone-wrap">
+      <div class="phone">
+        <div class="wa-bar">
+          <div class="wa-back">‹</div>
+          <div class="wa-avatar"><svg viewBox="0 0 16 16" fill="none" width="18" height="18"><path d="M8 2a3 3 0 100 6 3 3 0 000-6zM3 13c0-2.5 2.2-4 5-4s5 1.5 5 4" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+          <div class="wa-info">
+            <div class="wa-name" id="wa-name">Access Health Nigeria</div>
+            <div class="wa-status" id="wa-status">Healthcare navigation</div>
+          </div>
+        </div>
+        <div class="wa-bg" id="wa-chat"></div>
+        <div class="wa-opts-wrap" id="wa-opts"></div>
+        <div class="wa-bar-bottom">
+          <div class="wa-input-fake" id="wa-placeholder">Type a message</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="context-section">
+      <div class="context-grid">
+        <div class="ctx-card">
+          <div class="ctx-title">Why WhatsApp</div>
+          <div class="ctx-body">84% of Nigerian internet traffic is mobile. WhatsApp is already trusted and used daily — no new app needed. Works on 2G/3G low-bandwidth connections across northern Nigeria.</div>
+          <div class="stat-strip">
+            <div class="stat-chip"><div class="stat-v">38.7M</div><div class="stat-l">WhatsApp users in Nigeria</div></div>
+            <div class="stat-chip"><div class="stat-v">2G</div><div class="stat-l">Minimum network required</div></div>
+          </div>
+        </div>
+        <div class="ctx-card">
+          <div class="ctx-title">What makes this different</div>
+          <div class="ctx-body">Triage tools tell you urgency. This tool tells you <em>where to go and why to trust it</em> — directly addressing documented PHC distrust in northern Nigeria.</div>
+          <div style="margin-top:10px">
+            <span class="tag tag-g">Navigation not triage</span>
+            <span class="tag tag-a">PHC trust barrier</span>
+            <span class="tag tag-b">Hausa-first</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-ussd">
+    <div class="phone-wrap">
+      <div class="phone ussd-phone" style="width:280px">
+        <div class="ussd-notch"><div class="ussd-dot"></div></div>
+        <div class="ussd-topbar">
+          <span class="ussd-carrier">MTN NG &nbsp;|||</span>
+          <span class="ussd-signal">10:41</span>
+        </div>
+        <div class="ussd-screen" id="ussd-screen">Dial *XXX# to begin
+(code assigned on deployment)
+
+CON Access Health Nigeria
+
+1. I feel unwell
+   Ina rashin lafiya
+
+2. I need medication
+   Ina bukata magani
+
+3. Pregnancy / Ciki
+   Kulawa ta ciki
+
+4. Emergency
+   Gaggawa
+
+Reply with 1–4:</div>
+        <div class="ussd-input-bar">
+          <div class="ussd-typed" id="ussd-typed"><span class="cursor-blink">_</span></div>
+        </div>
+        <div class="ussd-keypad">
+          <button class="key" onclick="uk('1')">1</button>
+          <button class="key" onclick="uk('2')">2</button>
+          <button class="key" onclick="uk('3')">3</button>
+          <button class="key" onclick="uk('4')">4</button>
+          <button class="key" onclick="uk('5')">5</button>
+          <button class="key" onclick="uk('6')">6</button>
+          <button class="key" onclick="uk('7')">7</button>
+          <button class="key" onclick="uk('8')">8</button>
+          <button class="key" onclick="uk('9')">9</button>
+          <button class="key clr" onclick="uk('C')">CLR</button>
+          <button class="key" onclick="uk('0')">0</button>
+          <button class="key send" onclick="uk('OK')">OK</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="context-section">
+      <div class="context-grid">
+        <div class="ctx-card">
+          <div class="ctx-title">Why USSD reaches further</div>
+          <div class="ctx-body">USSD works on any phone — no smartphone, no internet, no data required. It is how millions of Nigerians already do mobile banking. It reaches the 54% who are offline and the communities that need this most.</div>
+          <div class="stat-strip">
+            <div class="stat-chip"><div class="stat-v">54%</div><div class="stat-l">of Nigerians offline</div></div>
+            <div class="stat-chip"><div class="stat-v">Any</div><div class="stat-l">phone supported</div></div>
+          </div>
+        </div>
+        <div class="ctx-card">
+          <div class="ctx-title">Two-channel strategy</div>
+          <div class="ctx-body">WhatsApp for urban and peri-urban users with smartphones. USSD for rural users without internet. Same navigation logic, two delivery channels — maximising reach across Nigeria's digital divide.</div>
+          <div style="margin-top:10px">
+            <span class="tag tag-g">Urban: WhatsApp</span>
+            <span class="tag tag-a">Rural: USSD</span>
+            <span class="tag tag-b">Same logic, two channels</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <div class="footer-text">
+    <span class="footer-name">Access Health Nigeria</span> · Design prototype · April 2026<br>
+    Created by <span class="footer-name">Aisha Mamadi</span>, MSc Global Health Management, Imperial Business School<br>
+    Production delivery via WhatsApp Business API + USSD · Addressing healthcare navigation and PHC trust barriers in northern Nigeria<br>
+    <em style="color:#aaa">Prototype for demonstration purposes. USSD code (*XXX#) to be assigned on deployment. Hausa content reviewed for Kano State context.</em>
+  </div>
+</footer>
+
+<script>
+const L = {
+  en:{
+    name:'Access Health Nigeria', status:'Healthcare navigation',
+    placeholder:'Type a message',
+    start:[
+      {t:'Welcome. I can help you find the right care near you.',d:'in'},
+      {t:'All guidance is free. I will never ask for payment.',d:'in'},
+      {t:'How can I help you today?',d:'in'}
+    ],
+    opts:[
+      {n:1,l:'I feel unwell',s:'Fever, pain, cough or diarrhoea',nx:'unwell'},
+      {n:2,l:'I need medication',s:'Prescription or regular medicine',nx:'medication'},
+      {n:3,l:'Pregnancy or newborn care',s:'Antenatal, delivery or postnatal',nx:'maternal'},
+      {n:4,l:'This is an emergency',s:'Severe pain or difficulty breathing',nx:'emergency'}
+    ],
+    flows:{
+      unwell:{q:'How long have you had symptoms?',opts:[
+        {n:1,l:'Less than 3 days, manageable',nx:'pharmacy'},
+        {n:2,l:'More than 3 days, not improving',nx:'phc'},
+        {n:3,l:'Sudden onset and severe',nx:'emergency'}
+      ]},
+      medication:{q:'What do you need?',opts:[
+        {n:1,l:'A medicine I use regularly',nx:'pharmacy'},
+        {n:2,l:'I have a prescription',nx:'pharmacy'},
+        {n:3,l:'Not sure — I just have symptoms',nx:'phc'}
+      ]},
+      maternal:{q:'What type of care do you need?',opts:[
+        {n:1,l:'Routine antenatal check-up',nx:'phc'},
+        {n:2,l:'Urgent — pain, bleeding or no movement',nx:'emergency'},
+        {n:3,l:'Postnatal care or baby vaccinations',nx:'phc'}
+      ]},
+      pharmacy:{type:'result',
+        msg:'Go to your nearest registered pharmacy. Look for the green cross sign.',
+        trust:'You do not need to go to hospital first. Pharmacists are trained healthcare workers — they can assess your symptoms and advise you directly.',
+        warn:'If symptoms do not improve in 2–3 days, visit your nearest PHC.'
+      },
+      phc:{type:'result',
+        msg:'Visit your nearest Primary Health Centre (PHC). It is free or very low cost.',
+        trust:'PHCs treat adults, not just children. Staff here are qualified. You will not be turned away like at a busy hospital. You do not need to have seen a traditional healer first.',
+        warn:'PHCs open Monday–Friday daytime. For after-hours urgent care, go to a general hospital.'
+      },
+      emergency:{type:'emergency',
+        msg:'Go to your nearest hospital emergency department immediately.',
+        num:'112'
+      }
+    }
+  },
+  ha:{
+    name:'Access Health Nigeria', status:'Jagorar kiwon lafiya',
+    placeholder:'Rubuta sako',
+    start:[
+      {t:'Barka da zuwa. Zan taimaka maka samun kulawa ta lafiya da ta dace a yankin ka.',d:'in'},
+      {t:'Duk jagorar kyauta ce. Ba zan taba neman kuɗi ba.',d:'in'},
+      {t:'Yaya zan iya taimaka maka yau?',d:'in'}
+    ],
+    opts:[
+      {n:1,l:'Ina jin rashin lafiya',s:'Zazzabi, ciwo, tari ko gudawa',nx:'unwell'},
+      {n:2,l:'Ina bukata magani',s:'Takardar magani ko magani da na saba',nx:'medication'},
+      {n:3,l:'Ciki ko kulawa ta jariri',s:'Kafin haihuwa, haihuwa ko bayan haihuwa',nx:'maternal'},
+      {n:4,l:'Gaggawa ce',s:'Ciwo mai tsanani ko wahalar numfashi',nx:'emergency'}
+    ],
+    flows:{
+      unwell:{q:'Tsawon lokaci nawa kake da alamun rashin lafiya?',opts:[
+        {n:1,l:'Kasa da kwana 3, mai sarrafa',nx:'pharmacy'},
+        {n:2,l:'Fiye da kwana 3, ba ta inganta ba',nx:'phc'},
+        {n:3,l:'Ta fara kwatsam kuma mai tsanani',nx:'emergency'}
+      ]},
+      medication:{q:'Menene kake bukata?',opts:[
+        {n:1,l:'Magani da nake amfani da shi kullum',nx:'pharmacy'},
+        {n:2,l:'Ina da takardar magani daga likita',nx:'pharmacy'},
+        {n:3,l:'Ban tabbata ba — ina da alamomi kawai',nx:'phc'}
+      ]},
+      maternal:{q:'Wane irin kulawa kake bukata?',opts:[
+        {n:1,l:'Dubawa ta yau da kullum a lokacin ciki',nx:'phc'},
+        {n:2,l:'Gaggawa — ciwo, zubar jini ko ba motsi ba',nx:'emergency'},
+        {n:3,l:'Kulawa bayan haihuwa ko alluran rigakafi',nx:'phc'}
+      ]},
+      pharmacy:{type:'result',
+        msg:'Je kantin magani mai rijista da ke kusa. Nemi alaman gicciye mai launin kore.',
+        trust:'Ba ka bukata je asibiti da farko ba. Masu sayar da magani ma\'aikata ne na kiwon lafiya — za su iya bincika alamominka kuma su ba ka shawara kai tsaye.',
+        warn:'Idan alamomin ba su inganta ba a cikin kwana 2–3, je PHC da ke kusa.'
+      },
+      phc:{type:'result',
+        msg:'Je Cibiyar Kiwon Lafiya ta Farko (PHC) da ke kusa. Kyauta ce ko da farashi ƙwarai.',
+        trust:'PHC na kula da manya, ba yara kawai ba. Ma\'aikatan nan sun cancanta. Ba za a mayar da kai ba kamar yadda yakan faru a asibiti mai cunkoson jama\'a. Ba kwa bukata je wanda ke warkar da gargajiya da farko.',
+        warn:'PHC tana bude Litinin–Jumma\'a a lokacin rana. Don kulawa mai gaggawa bayan aiki, je asibitin gaba ɗaya.'
+      },
+      emergency:{type:'emergency',
+        msg:'Je sashen gaggawa na asibiti da ya fi kusa nan take.',
+        num:'112'
+      }
+    }
+  }
+};
+
+let cur='en';
+function tl(){return L[cur];}
+function ts(){return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
+
+function addBubble(text,dir,delay){
+  return new Promise(res=>{
+    setTimeout(()=>{
+      const c=document.getElementById('wa-chat');
+      const b=document.createElement('div');
+      b.className='wb '+dir;
+      if(dir==='sys'){b.textContent=text;}
+      else{b.innerHTML=text+'<span class="wb-time">'+ts()+(dir==='out'?' <span class="wb-ticks">✓✓</span>':'')+'</span>';}
+      b.style.opacity='0';b.style.transition='opacity 0.2s';
+      c.appendChild(b);
+      requestAnimationFrame(()=>{b.style.opacity='1';});
+      c.scrollTop=c.scrollHeight;
+      res();
+    },delay);
+  });
+}
+
+function setOpts(opts){
+  const o=document.getElementById('wa-opts');
+  o.innerHTML='';
+  opts.forEach(opt=>{
+    const b=document.createElement('button');
+    b.className='wa-opt';
+    b.innerHTML='<span class="wa-opt-n">'+opt.n+'</span><div><div>'+opt.l+'</div>'+(opt.s?'<div class="wa-opt-sub">'+opt.s+'</div>':'')+'</div>';
+    b.onclick=()=>pick(opt);
+    o.appendChild(b);
+  });
+}
+
+function clearOpts(){document.getElementById('wa-opts').innerHTML='';}
+
+async function pick(opt){
+  clearOpts();
+  await addBubble(opt.n+'. '+opt.l,'out',0);
+  if(opt.nx==='_restart'){initWa();return;}
+  const flow=tl().flows[opt.nx];
+  if(!flow)return;
+  if(flow.type==='result'){
+    await addBubble(flow.msg,'in',600);
+    await addBubble('<div class="trust-msg">'+flow.trust+'</div>','in',1100);
+    await addBubble('<div class="warn-msg">'+flow.warn+'</div>','in',1600);
+    setTimeout(()=>setOpts([{n:1,l:cur==='en'?'Start again':'Fara daga farko',nx:'_restart'}]),2100);
+  } else if(flow.type==='emergency'){
+    await addBubble('<div class="emergency-msg">EMERGENCY — '+flow.msg+'<br>Call / Kira: '+flow.num+'</div>','in',500);
+    setTimeout(()=>setOpts([{n:1,l:cur==='en'?'Start again':'Fara daga farko',nx:'_restart'}]),1200);
+  } else {
+    await addBubble(flow.q,'in',600);
+    setTimeout(()=>setOpts(flow.opts),1100);
+  }
+}
+
+async function initWa(){
+  const l=tl();
+  document.getElementById('wa-name').textContent=l.name;
+  document.getElementById('wa-status').textContent=l.status;
+  document.getElementById('wa-placeholder').textContent=l.placeholder;
+  const c=document.getElementById('wa-chat');
+  c.innerHTML='';clearOpts();
+  await addBubble(cur==='en'?'Today':'Yau','sys',0);
+  for(let i=0;i<l.start.length;i++) await addBubble(l.start[i].t,l.start[i].d,400+i*500);
+  setTimeout(()=>setOpts(l.opts),400+l.start.length*500+300);
+}
+
+function setLang(l,btn){
+  cur=l;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  initWa();
+}
+
+function switchTab(t,btn){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-'+t).classList.add('active');
+}
+
+// USSD
+let ubuf='';
+const uflows={
+  '1':{type:'menu',text:`CON Access Health Nigeria\n\nHow long have symptoms?\nTsawon lokacin alamun?\n\n1. Under 3 days / Kasa da kwana 3\n2. Over 3 days / Fiye da kwana 3\n3. Sudden & severe / Kwatsam mai tsanani\n\nReply 1–3:`},
+  '11':{type:'end',text:`END Go to nearest pharmacy.\nJe kantin magani da ke kusa.\n\nPharmacists are trained\nhealthcare workers.\nMa'aikata ne na lafiya.\n\nIf no improvement in 2-3 days\nvisit your PHC.`},
+  '12':{type:'end',text:`END Visit your nearest PHC.\nJe PHC da ke kusa.\n\nFree or low cost.\nKyauta ko mai araha.\n\nPHCs treat adults too.\nPHC na kula da manya ma.\n\nYou will not be turned away.\nBa za a mayar da kai ba.`},
+  '13':{type:'end',text:`END EMERGENCY / GAGGAWA\n\nGo to hospital now.\nJe asibiti nan take.\n\nCall 112 for help.\nKira 112 don taimako.`},
+  '2':{type:'end',text:`END Go to nearest pharmacy.\nJe kantin magani da ke kusa.\n\nBring prescription or name\nof your medicine.\nKawo takardar magani ko\nka faɗa sunansa.`},
+  '3':{type:'menu',text:`CON Access Health Nigeria\n\nType of care needed?\nWane irin kulawa?\n\n1. Antenatal check-up\n   Dubawa a lokacin ciki\n2. Urgent — pain/bleeding\n   Gaggawa — ciwo/zubar jini\n3. Postnatal / vaccination\n   Bayan haihuwa / allura\n\nReply 1–3:`},
+  '31':{type:'end',text:`END Visit your nearest PHC.\nJe PHC da ke kusa.\n\nFree antenatal care.\nKulawa ta ciki kyauta.\n\nBring previous records\nif you have them.`},
+  '32':{type:'end',text:`END EMERGENCY / GAGGAWA\n\nGo to hospital now.\nJe asibiti nan take.\n\nCall 112 immediately.\nKira 112 yanzu.`},
+  '33':{type:'end',text:`END Visit your nearest PHC.\nJe PHC da ke kusa.\n\nPostnatal and vaccination\nservices available.\nAikin rigakafi yana nan.`},
+  '4':{type:'end',text:`END EMERGENCY / GAGGAWA\n\nCall 112 now.\nKira 112 yanzu.\n\nGo to nearest hospital\nemergency department.\nJe asibiti nan take.`}
+};
+
+const ussdHome=`Dial *XXX# to begin\n(code on deployment)\n\nCON Access Health Nigeria\n\n1. I feel unwell\n   Ina rashin lafiya\n2. I need medication\n   Ina bukata magani\n3. Pregnancy / Ciki\n4. Emergency / Gaggawa\n\nReply with 1–4:`;
+
+function uk(k){
+  if(k==='C'){ubuf='';document.getElementById('ussd-typed').innerHTML='<span class="cursor-blink">_</span>';return;}
+  if(k==='OK'){
+    const r=uflows[ubuf];
+    if(r){
+      document.getElementById('ussd-screen').textContent=r.text;
+      if(r.type==='end'){
+        setTimeout(()=>{
+          document.getElementById('ussd-screen').textContent='Session ended.\nSean ya ƙare.\n\nDial *XXX# again\nto start over.';
+          ubuf='';
+          document.getElementById('ussd-typed').innerHTML='<span class="cursor-blink">_</span>';
+        },6000);
+      }
+    } else {
+      document.getElementById('ussd-screen').textContent='Invalid input.\nZaɓi mara inganci.\n\nDial *XXX# to start again.\nKira *XXX# sake.';
+      ubuf='';
+    }
+    document.getElementById('ussd-typed').innerHTML='<span class="cursor-blink">_</span>';
+    return;
+  }
+  ubuf+=k;
+  document.getElementById('ussd-typed').innerHTML=ubuf+'<span class="cursor-blink">_</span>';
+}
+
+initWa();
+</script>
+</body>
+</html>
